@@ -1,21 +1,7 @@
 import Link from 'next/link';
+import { getExercises } from '../../firebase/client';
 
-export default function Exercises() {
-  const exercises = [
-    {
-      slug: 'power-clean',
-      name: 'Power Clean'
-    },
-    {
-      slug: 'power-snatch',
-      name: 'Power Snatch'
-    },
-    {
-      slug: 'deadlift',
-      name: 'Deadlift'
-    }
-  ];
-
+export default function Exercises({ exercises }) {
   const listOfExercises = exercises.map((el) => {
     return (
       <Link key={el.slug} href={`/exercises/${el.slug}`}>
@@ -29,4 +15,10 @@ export default function Exercises() {
       <div>{listOfExercises}</div>
     </>
   );
+}
+export async function getServerSideProps(context) {
+  const exercisesData = await getExercises();
+  return {
+    props: { exercises: exercisesData } // will be passed to the page component as props
+  };
 }
