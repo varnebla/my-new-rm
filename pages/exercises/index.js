@@ -4,15 +4,19 @@ import { getExercises } from '../../firebase/client';
 export default function Exercises({ exercises }) {
   const listOfExercises = exercises.map((el) => {
     return (
-      <Link key={el.slug} href={`/exercises/${el.slug}`}>
-        <a>{el.name}</a>
-      </Link>
+      <li key={el.slug}>
+        <Link href={`/exercises/${el.slug}`}>
+          <a className="border-2 border-black rounded-md px-3 py-2 hover:bg-black hover:text-white transition-color duration-100">
+            {el.name}
+          </a>
+        </Link>
+      </li>
     );
   });
   return (
     <>
-      <h1>Exercises</h1>
-      <div>{listOfExercises}</div>
+      <h1 className="font-bold text-3xl mb-4">Exercises</h1>
+      <ul className="flex flex-col gap-y-8">{listOfExercises}</ul>
     </>
   );
 }

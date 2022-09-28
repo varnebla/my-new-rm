@@ -44,3 +44,25 @@ export async function getExerciseBySlug(slug) {
   if (documentSnapshot.exists()) return documentSnapshot.data();
   else return null;
 }
+
+export async function getRmsByUser(username) {
+  const maxRepsReference = collection(db, 'maxreps');
+
+  console.log(username);
+  const maxRepsQuery = query(
+    maxRepsReference,
+    where('username', '==', username)
+  );
+
+  const querySnapshot = await getDocs(maxRepsQuery);
+
+  const maxRepsResult = [];
+  //TODO return just the last RM by date
+
+  querySnapshot.forEach((el) => {
+    console.log(el.data());
+    maxRepsResult.push(el.data());
+  });
+
+  return maxRepsResult;
+}
