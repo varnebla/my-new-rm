@@ -8,7 +8,8 @@ import {
   doc,
   getDoc,
   query,
-  where
+  where,
+  orderBy
 } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -48,7 +49,6 @@ export async function getExerciseBySlug(slug) {
 export async function getRmsByUser(username) {
   const maxRepsReference = collection(db, 'maxreps');
 
-  console.log(username);
   const maxRepsQuery = query(
     maxRepsReference,
     where('username', '==', username)
@@ -60,9 +60,16 @@ export async function getRmsByUser(username) {
   //TODO return just the last RM by date
 
   querySnapshot.forEach((el) => {
-    console.log(el.data());
     maxRepsResult.push(el.data());
   });
 
-  return maxRepsResult;
+  // the list will show last RMs
+  const exerciseAlreadyAdded = new Set();
+  const lastMaxReps = maxRepsResult.filter((el) => {
+    const duplicate = exerciseAlreadyAdded.has(el.exercise);
+    exerciseAlreadyAdded.add(el.exercise);
+    return !duplicate;
+  });
+
+  return lastMaxReps;
 }

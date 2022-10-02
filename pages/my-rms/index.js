@@ -3,7 +3,7 @@ import { getRmsByUser } from '../../firebase/client';
 export default function MyRms({ maxReps }) {
   const maxRepsList = maxReps.map((el) => {
     return (
-      <li key={el.exercise}>
+      <li key={`${el.createdAt}-${el.weight}-${el.exercise}`}>
         <p>{el.exercise}</p>
         <p>{el.weight} kg</p>
         <p>{el.createdAt}</p>
