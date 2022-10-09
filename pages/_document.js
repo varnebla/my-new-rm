@@ -8,10 +8,10 @@ export default function Document() {
           href="https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         /> */}
-        <link
+        {/* <link
           href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=Open+Sans&display=swap"
           rel="stylesheet"
-        ></link>
+        ></link> */}
       </Head>
       <body className="h-full">
         <Main />
