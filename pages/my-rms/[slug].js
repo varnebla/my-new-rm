@@ -1,7 +1,7 @@
 import { data } from '../../data/power-clean-rms.json';
 // import LineChart from '../../components/LineChart';
 import { PercentageSlider } from '../../components/PercentagesSlider';
-import { ThreeDotsIcon } from '../../components/icons/ThreeDotsIcon';
+import { Calendar, ChevronRight } from 'lucide-react';
 import { getMaxRepetition, getWeightPercentages } from '../../helpers/formulas';
 
 export default function MyRmSlug({ maxReps }) {
@@ -12,14 +12,22 @@ export default function MyRmSlug({ maxReps }) {
     return (
       <li
         key={`${el.name}-${el.createdAt}`}
-        className="flex justify-between items-center gap-x-2 w-full px-3 py-4"
+        className="flex justify-between items-center gap-x-2 w-full px-3 py-4 text-gray-500 text-sm"
       >
-        <span className="flex-1">{el.createdAt}</span>
-        <span className="flex-1 text-right">{el.weight} kg</span>
-        <span className="flex-1 text-right">{el.reps} reps</span>
-        <button className="text-right rounded-full bg-gray-100 w-min p-2">
+        <div className="flex flex-col gap-y-2">
+          <p className="flex gap-x-1">
+            <span className="text-violet-600">{el.weight} kg</span>
+            <span>en {el.reps} reps</span>
+          </p>
+          <p className="flex items-center gap-x-1">
+            <Calendar color="currentColor" size={14} />
+            <span>{el.createdAt}</span>
+          </p>
+        </div>
+        <ChevronRight color="currentColor" size={18} />
+        {/* <button className="text-right rounded-full bg-gray-100 w-min p-2">
           <ThreeDotsIcon />
-        </button>
+        </button> */}
       </li>
     );
   });
@@ -36,18 +44,27 @@ export default function MyRmSlug({ maxReps }) {
 
   return (
     <>
-      <h1 className="font-bold text-3xl mb-4">Power clean RMs</h1>
+      <h1 className="font-bold text-3xl mb-8">Power clean RMs</h1>
       {/* <LineChart labels={listOfDates} values={listOfRms}></LineChart> */}
-      <div className="font-bold bg-gray-100 rounded-lg p-3 w-max mx-auto mb-4">
-        <span className="text-6xl">{lastRM}</span>
-        <span className="text-2xl"> kg</span>
+      <div className="font-bold rounded-full w-40 h-40 mx-auto mb-8  relative">
+        <div className="relative bg-white z-10 w-40 h-40 rounded-full flex justify-center items-center border border-gray-200">
+          <p>
+            <span className="text-6xl">{lastRM}</span>
+            <span className="text-2xl"> kg</span>
+          </p>
+        </div>
+        <div className="bg-gradient-to-tr z-0 from-lime-300 to-violet-400 blur-md rounded-full absolute top-0 bottom-0 left-0 right-0"></div>
       </div>
       <PercentageSlider percentages={percentages} />
-      <button className="max-w-sm mx-auto w-full bg-lime-300 text-lg px-3 py-2.5 font-bold mb-4 rounded-lg">
-        Añadir RM
-      </button>
-      <h3 className="font-semibold text-xl">Tus RMs</h3>
-      <ul className="flex flex-col divide-y-2">{listOfReps}</ul>
+      <div className="w-full flex justify-center">
+        <button className="max-w-sm w-full bg-lime-300 text-lg px-4 py-3 font-bold mb-6 rounded-full">
+          Añadir RM
+        </button>
+      </div>
+      <h3 className="font-semibold text-xl mb-4">Tus RMs</h3>
+      <ul className="flex flex-col rounded-lg divide-y divide-gray-100 border border-gray-100 shadow-sm mb-8">
+        {listOfReps}
+      </ul>
     </>
   );
 }
