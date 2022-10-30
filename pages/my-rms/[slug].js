@@ -1,13 +1,17 @@
 import { data } from '../../data/power-clean-rms.json';
 // import LineChart from '../../components/LineChart';
 import { PercentageSlider } from '../../components/PercentagesSlider';
+import { AddRmForm } from '../../components/AddRmForm';
+import { BaseModal } from '../../components/BaseModal';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { getMaxRepetition, getWeightPercentages } from '../../helpers/formulas';
+import { useState } from 'react';
 
 export default function MyRmSlug({ maxReps }) {
   // const listOfDates = maxReps.map((el) => el.createdAt).reverse();
   // replace weights by rms with formula
   // const listOfRms = maxReps.map((el) => el.weight).reverse();
+  const [showModal, toggleShowModal] = useState(false);
   const listOfReps = maxReps.map((el) => {
     return (
       <li
@@ -25,9 +29,6 @@ export default function MyRmSlug({ maxReps }) {
           </p>
         </div>
         <ChevronRight color="currentColor" size={18} />
-        {/* <button className="text-right rounded-full bg-gray-100 w-min p-2">
-          <ThreeDotsIcon />
-        </button> */}
       </li>
     );
   });
@@ -41,6 +42,12 @@ export default function MyRmSlug({ maxReps }) {
     weight: maxReps[0].weight,
     repetitions: maxReps[0].reps
   });
+
+  const addRmModal = showModal && (
+    <BaseModal close={() => toggleShowModal(false)}>
+      <AddRmForm />
+    </BaseModal>
+  );
 
   return (
     <>
@@ -57,7 +64,10 @@ export default function MyRmSlug({ maxReps }) {
       </div>
       <PercentageSlider percentages={percentages} />
       <div className="w-full flex justify-center">
-        <button className="max-w-sm w-full bg-lime-300 text-lg px-4 py-3 font-bold mb-6 rounded-full">
+        <button
+          className="max-w-sm w-full bg-lime-300 text-lg px-4 py-3 font-bold mb-6 rounded-full"
+          onClick={() => toggleShowModal(true)}
+        >
           Añadir RM
         </button>
       </div>
@@ -65,6 +75,7 @@ export default function MyRmSlug({ maxReps }) {
       <ul className="flex flex-col rounded-lg divide-y divide-gray-100 border border-gray-100 shadow-sm mb-8">
         {listOfReps}
       </ul>
+      {addRmModal}
     </>
   );
 }

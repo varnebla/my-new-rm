@@ -3,7 +3,7 @@ export function PercentageSlider({ percentages }) {
     const percentage = Object.keys(el)[0];
     return (
       <li
-        key={percentage[index]}
+        key={`perc-${percentage}`}
         className="flex flex-col items-center w-max relative py-4"
       >
         <p className="w-max px-2 py-1 text-sm bg-gray-200  rounded-full absolute top-0">
