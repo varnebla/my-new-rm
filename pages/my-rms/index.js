@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import Link from 'next/link';
 import { getRmsByUser } from '../../firebase/client';
 import { getMaxRepetition } from '../../helpers/formulas';
 
 export default function MyRms({ maxReps }) {
-  const [showModal, setShowModal] = useState(false);
-
   const maxRepsList = maxReps.map((el) => {
     return (
       <Link
@@ -30,10 +27,6 @@ export default function MyRms({ maxReps }) {
     <>
       <h1 className="font-bold text-3xl mb-4">My rms</h1>
       <div className="flex flex-col gap-y-3 mb-4">{maxRepsList}</div>
-      <button className="bg-black text-lg font-semibold text-white px-3 py-2.5 rounded-lg hover:bg-opacity-75 w-full">
-        {/* onClick={setShowModal(true)} */}
-        Añadir RM
-      </button>
     </>
   );
 }

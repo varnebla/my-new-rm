@@ -1,4 +1,5 @@
 import { data } from '../../data/power-clean-rms.json';
+import { getRmsByExerciseAndUser } from '../../firebase/client';
 // import LineChart from '../../components/LineChart';
 import { PercentageSlider } from '../../components/PercentagesSlider';
 import { AddRmForm } from '../../components/AddRmForm';
@@ -12,47 +13,77 @@ export default function MyRmSlug({ maxReps }) {
   // replace weights by rms with formula
   // const listOfRms = maxReps.map((el) => el.weight).reverse();
   const [showModal, toggleShowModal] = useState(false);
-  const listOfReps = maxReps.map((el) => {
-    return (
-      <li
-        key={`${el.name}-${el.createdAt}`}
-        className="flex justify-between items-center gap-x-2 w-full px-3 py-4 text-gray-500 text-sm"
-      >
-        <div className="flex flex-col gap-y-2">
-          <p className="flex gap-x-1">
-            <span className="text-violet-600">{el.weight} kg</span>
-            <span>en {el.reps} reps</span>
-          </p>
-          <p className="flex items-center gap-x-1">
-            <Calendar color="currentColor" size={14} />
-            <span>{el.createdAt}</span>
-          </p>
-        </div>
-        <ChevronRight color="currentColor" size={18} />
-      </li>
-    );
-  });
+  const [showEditModal, toggleShowEditModal] = useState(false);
+  const [currentRm, setCurrentRm] = useState({});
 
-  const lastRM = getMaxRepetition({
-    weight: maxReps[0].weight,
-    repetitions: maxReps[0].reps
-  });
+  const handleClickOnListOfReps = (currentRm) => {
+    setCurrentRm(() => ({
+      uid: currentRm.uid,
+      rmDate: currentRm.createdAt.split('/').reverse().join('-'), //format for default value in input date
+      rmWeight: currentRm.weight,
+      rmReps: currentRm.reps
+    }));
+    toggleShowEditModal(true);
+  };
 
-  const percentages = getWeightPercentages({
-    weight: maxReps[0].weight,
-    repetitions: maxReps[0].reps
-  });
+  const listOfReps =
+    maxReps.length &&
+    maxReps.map((el) => {
+      return (
+        <li key={`${el.exercise}-${el.createdAt}`}>
+          <button
+            className="flex justify-between items-center gap-x-2 w-full px-3 py-4 text-gray-500 text-sm"
+            onClick={() => handleClickOnListOfReps(el)}
+          >
+            <div className="flex flex-col gap-y-2">
+              <p className="flex gap-x-1">
+                <span className="text-violet-600">{el.weight} kg</span>
+                <span>en {el.reps} reps</span>
+              </p>
+              <p className="flex items-center gap-x-1">
+                <Calendar color="currentColor" size={14} />
+                <span>{el.createdAt}</span>
+              </p>
+            </div>
+            <ChevronRight color="currentColor" size={18} />
+          </button>
+        </li>
+      );
+    });
+
+  const lastRM =
+    maxReps.length &&
+    getMaxRepetition({
+      weight: maxReps[0].weight,
+      repetitions: maxReps[0].reps
+    });
+
+  const percentages =
+    maxReps.length &&
+    getWeightPercentages({
+      weight: maxReps[0]?.weight,
+      repetitions: maxReps[0]?.reps
+    });
 
   const addRmModal = showModal && (
     <BaseModal close={() => toggleShowModal(false)}>
-      <AddRmForm />
+      <AddRmForm close={() => toggleShowModal(false)} />
     </BaseModal>
   );
 
-  return (
+  const editRmModal = showEditModal && (
+    <BaseModal close={() => toggleShowEditModal(false)}>
+      <AddRmForm
+        currentRm={currentRm}
+        close={() => toggleShowEditModal(false)}
+      />
+    </BaseModal>
+  );
+
+  const pageContent = !maxReps.length ? (
+    <h2>No hay resultados</h2>
+  ) : (
     <>
-      <h1 className="font-bold text-3xl mb-8">Power clean RMs</h1>
-      {/* <LineChart labels={listOfDates} values={listOfRms}></LineChart> */}
       <div className="font-bold rounded-full w-40 h-40 mx-auto mb-8  relative">
         <div className="relative bg-white z-10 w-40 h-40 rounded-full flex justify-center items-center border border-gray-200">
           <p>
@@ -75,19 +106,32 @@ export default function MyRmSlug({ maxReps }) {
       <ul className="flex flex-col rounded-lg divide-y divide-gray-100 border border-gray-100 shadow-sm mb-8">
         {listOfReps}
       </ul>
+    </>
+  );
+
+  return (
+    <>
+      <h1 className="font-bold text-3xl mb-8">Power clean RMs</h1>
+      {/* <LineChart labels={listOfDates} values={listOfRms}></LineChart> */}
+      {pageContent}
       {addRmModal}
+      {editRmModal}
     </>
   );
 }
 
-export async function getServerSideProps({}) {
-  let maxReps = data;
-  console.log(maxReps, 'macreps');
-  maxReps = maxReps.map((el) => ({
-    name: el.name,
-    weight: el.weight,
-    reps: el.reps,
-    createdAt: new Date(el.created_at).toLocaleDateString()
+export async function getServerSideProps({ params }) {
+  let maxReps = await getRmsByExerciseAndUser({
+    username: 'victor.arnedo.93@gmail.com',
+    slug: params.slug
+  });
+
+  maxReps = maxReps.map(({ uid, data }) => ({
+    uid: uid,
+    exercise: data.exercise,
+    weight: data.weight,
+    reps: data.reps,
+    createdAt: new Date(data.created_at.seconds * 1000).toLocaleDateString()
   }));
   return {
     props: { maxReps: maxReps } // will be passed to the page component as props

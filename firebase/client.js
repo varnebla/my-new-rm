@@ -9,7 +9,9 @@ import {
   getDoc,
   query,
   where,
-  orderBy
+  setDoc,
+  orderBy,
+  addDoc
 } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -30,6 +32,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
 const db = getFirestore(app);
+
+const MAX_REPS = 'maxreps';
 
 export async function getExercises() {
   const exercisesSnapshot = await getDocs(collection(db, 'exercises'));
@@ -72,4 +76,29 @@ export async function getRmsByUser(username) {
   });
 
   return lastMaxReps;
+}
+
+export async function getRmsByExerciseAndUser({ username, slug }) {
+  const maxRepsReference = collection(db, 'maxreps');
+  const maxRepsQuery = query(
+    maxRepsReference,
+    where('username', '==', username),
+    where('slug', '==', slug)
+  );
+  const querySnapshot = await getDocs(maxRepsQuery);
+
+  const maxRepsResult = [];
+
+  querySnapshot.forEach((el) => {
+    maxRepsResult.push({
+      uid: el.id,
+      data: el.data()
+    });
+  });
+  return maxRepsResult;
+}
+
+export async function addNewUserRm(rmDetails) {
+  const documentReference = collection(db, MAX_REPS);
+  await addDoc(documentReference, rmDetails);
 }
